@@ -2865,11 +2865,13 @@ dc.coordinateGridMixin = function (_chart) {
             _parent = parent;
         }
 
+        var href = window.location.href.split('#')[0];
+
         _g = _parent.append('g');
 
         _chartBodyG = _g.append('g').attr('class', 'chart-body')
             .attr('transform', 'translate(' + _chart.margins().left + ', ' + _chart.margins().top + ')')
-            .attr('clip-path', 'url(' + window.location.href + '#' + getClipPathId() + ')');
+            .attr('clip-path', 'url(' + href + '#' + getClipPathId() + ')');
 
         return _g;
     };
@@ -10497,7 +10499,8 @@ dc.selectMenu = function (parent, chartGroup) {
     var _select;
     var _promptText = 'Select all';
     var _multiple = false;
-    var _size = null;
+    var _promptValue = null;
+    var _numberVisible = null;
     var _order = function (a, b) {
         return _chart.keyAccessor()(a) > _chart.keyAccessor()(b) ?
              1 : _chart.keyAccessor()(b) > _chart.keyAccessor()(a) ?
@@ -10576,7 +10579,7 @@ dc.selectMenu = function (parent, chartGroup) {
         // console.log(values);
         // check if only prompt option is selected
         if (values.length === 1 && values[0] === '') {
-            values = null;
+            values = _promptValue || null;
         } else if (!_multiple && values.length === 1) {
             values = values[0];
         }
@@ -10602,8 +10605,8 @@ dc.selectMenu = function (parent, chartGroup) {
         } else {
             _select.attr('multiple', null);
         }
-        if (_size !== null) {
-            _select.attr('size', _size);
+        if (_numberVisible !== null) {
+            _select.attr('size', _numberVisible);
         } else {
             _select.attr('size', null);
         }
@@ -10689,23 +10692,45 @@ dc.selectMenu = function (parent, chartGroup) {
     };
 
     /**
-     * Controls the height, in lines, of the select menu, when `.multiple()` is true. If `null` (the default),
-     * uses the browser's default height.
-     * @name size
+     * Controls the default value to be used for
+     * [dimension.filter](https://github.com/crossfilter/crossfilter/wiki/API-Reference#dimension_filter)
+     * when only the prompt value is selected. If `null` (the default), no filtering will occur when
+     * just the prompt is selected.
+     * @name promptValue
      * @memberof dc.selectMenu
      * @instance
-     * @param {?number} [size
-     * @example
-     * chart.size(10);
+     * @param {?*} [promptValue=null]
      **/
-    _chart.size = function (size) {
+    _chart.promptValue = function (promptValue) {
         if (!arguments.length) {
-            return _size;
+            return _promptValue;
         }
-        _size = size;
+        _promptValue = promptValue;
 
         return _chart;
     };
+
+    /**
+     * Controls the number of items to show in the select menu, when `.multiple()` is true. This
+     * controls the [`size` attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select#Attributes) of
+     * the `select` element. If `null` (the default), uses the browser's default height.
+     * @name numberItems
+     * @memberof dc.selectMenu
+     * @instance
+     * @param {?number} [numberVisible=null]
+     * @example
+     * chart.numberVisible(10);
+     **/
+    _chart.numberVisible = function (numberVisible) {
+        if (!arguments.length) {
+            return _numberVisible;
+        }
+        _numberVisible = numberVisible;
+
+        return _chart;
+    };
+
+    _chart.size = dc.logger.deprecate(_chart.numberVisible, 'selectMenu.size is ambiguous - use numberVisible instead');
 
     return _chart.anchor(parent, chartGroup);
 };
