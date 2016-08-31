@@ -91,8 +91,6 @@ dc.dataCount = function (parent, chartGroup) {
         var all = _formatNumber(tot);
         var selected = _formatNumber(val);
 
-        console.log(">>> data-count doRender <<<<");
-        
         if ((tot === val) && (_html.all !== '')) {
             _chart.root().html(_html.all.replace('%total-count', all).replace('%filter-count', selected));
         } else if (_html.some !== '') {
