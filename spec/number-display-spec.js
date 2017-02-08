@@ -151,7 +151,7 @@ describe('dc.numberDisplay', function () {
     });
     describe('Inline nonspan element' , function () {
         beforeEach(function () {
-            var div = d3.select('body').append('div').attr('id','number-display-test-section');
+            var div = d3.select('body').append('div').attr('id', 'number-display-test-section');
             div.append('p').html('There are <em id="nonspan"></em> Total Widgets.');
             buildChart('#nonspan');
         });
@@ -164,6 +164,37 @@ describe('dc.numberDisplay', function () {
             countryDimension.filterAll();
             d3.select('#number-display-test-section').remove();
         });
+    });
+    describe('with group with multiple values', function () {
+        var group, chart;
+        beforeEach(function () {
+            countryDimension.filterAll();
+            group = countryDimension.group().reduceSum(function (d) { return +d.value; });
+            var id = 'empty-div';
+            appendChartID(id);
+            chart = buildChart('#' + id);
+            chart
+                .group(group)
+                .valueAccessor(function (kv) { return kv.value; })
+                .render();
+            d3.timer.flush();
+        });
+
+        it('should show the largest value', function () {
+            expect(chart.select('span.number-display').text()).toEqual('341');
+        });
+
+        describe('with reversed ordering', function () {
+            beforeEach(function () {
+                chart.ordering(function (kv) { return -kv.value; })
+                    .render();
+                d3.timer.flush();
+            });
+            it('should show the smallest value', function () {
+                expect(chart.select('span.number-display').text()).toEqual('77.0');
+            });
+        });
+
     });
     describe('Infinity', function () {
         var chart;

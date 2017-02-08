@@ -117,9 +117,36 @@ describe('dc.lineChart', function () {
                 chart.render();
             });
 
-            it('should not render tooltips when boolean flag is false', function () {
-                expect(chart.select('.sub._0 .dc-tooltip._0 .dot').empty()).toBeTruthy();
-                expect(chart.select('.sub._1 .dc-tooltip._0 .dot').empty()).toBeTruthy();
+            it('should not render dots and tips when boolean flag is false', function () {
+                expect(chart.select('.dc-tooltip._0 .dot').empty()).toBeTruthy();
+                expect(chart.select('.dc-tooltip._0 .dot title').empty()).toBeTruthy();
+            });
+
+        });
+
+        describe('title rendering with brushOn', function () {
+            beforeEach(function () {
+                chart.brushOn(true)
+                    .xyTipsOn(true); // default, for exposition
+                chart.render();
+            });
+
+            it('should not render tips', function () {
+                expect(chart.select('.dc-tooltip._0 .dot').empty()).toBeTruthy();
+                expect(chart.select('.dc-tooltip._0 .dot title').empty()).toBeTruthy();
+            });
+
+            describe('with xyTipsOn always', function () {
+                beforeEach(function () {
+                    chart.brushOn(true)
+                        .xyTipsOn('always');
+                    chart.render();
+                });
+
+                it('should render dots', function () {
+                    expect(chart.select('.dc-tooltip._0 .dot').empty()).toBeFalsy();
+                    expect(chart.select('.dc-tooltip._0 .dot title').empty()).toBeFalsy();
+                });
             });
         });
 
@@ -708,12 +735,12 @@ describe('dc.lineChart', function () {
     describe('change color', function () {
         beforeEach(function () {
             chart.brushOn(false)
-                .ordinalColors(['#FF0000'])
+                .ordinalColors(['#ff0000'])
                 .colorAccessor(function () { return 0; })
                 .render();
         });
         it('updates dot colors', function () {
-            expect(chart.select('circle.dot')[0][0].attributes.fill.value).toMatch(/#FF0000/i);
+            expect(chart.select('circle.dot')[0][0].attributes.fill.value).toMatch(/#ff0000/i);
         });
     });
 

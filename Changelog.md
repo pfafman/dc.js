@@ -1,3 +1,22 @@
+## 2.1.4
+ * Simplified `capMixin.othersGrouper` default implementation by passing the rest of the items as well as those before the cap. This is possible because of [#934](https://github.com/dc-js/dc.js/issues/934) relying on sorting of `group.all()` instead of `group.top()`. The default implementation is now easy to understand and it should be easier to customize (if anyone should want to).
+ * Added example filtering segments of stack ([#657](https://github.com/dc-js/dc.js/issues/657))
+
+## 2.1.3
+ * 2.1.2 did not observe the common convention of having the rows/pie slices ordered from greatest to least - now we take from the front by default. ([#1296](https://github.com/dc-js/dc.js/issues/1296)
+ * Add [`takeFront`](http://dc-js.github.io/dc.js/docs/html/dc.capMixin.html#takeFront) option, defaulted true, in case you want to take from the back isntead.
+ * Remove `component.json`, since [component-js has been deprecated for a long time](https://github.com/componentjs/component/issues/639) (actually it got deprecated immediately after we added this in [#860](https://github.com/dc-js/dc.js/pull/860))
+
+## 2.1.2
+ * Lift `elasticRadius` from `bubbleChart` to `bubbleMixin`, making it available to `bubbleOverlay` ([#661](https://github.com/dc-js/dc.js/issues/661))
+Stop using `group.top()` in favor of `group.all()` sorting and slicing. ([#934](https://github.com/dc-js/dc.js/issues/934))
+ * Eliminate use of `group.top()` in cap mixin, by Macy Abbey ([#1184](https://github.com/dc-js/dc.js/pull/1184)). It already had to agree with `chart.ordering()` for the results to make sense.
+ * Eliminate `group.top()` in number display. This one is more problematic but probably less common. Although the number display now defaults ordering to `function (kv) { return kv.value; }`, applications which use a group with multiple bins with the number display, which were using `group.order()` to specify which bin should be displayed, must now specify `numberDisplay.ordering()` instead.
+ * Eliminate `group.top()` in bubble mixin, which was used to draw the bubbles in descending order of size, when the `group.order()` specified the radius. The bubble chart's `sortBubbleSize` is more general and is lifted to the mixin.
+
+## 2.1.1
+ * Merges 2.0.1
+
 ## 2.1.0
  * `dc.selectMenu`, implementing a `<select>` menu or multiple-select widget, by Andrea Singh ([#771](https://github.com/dc-js/dc.js/pull/771))
  * Heatmap allows customizing the ordering separately from the values, by Matt Traynham ([#869](https://github.com/dc-js/dc.js/pull/869) - thanks also to Quinn Lee for [#837](https://github.com/dc-js/dc.js/pull/837))
@@ -5,8 +24,38 @@
  * Functional-style filter handlers: instead of modifying the array of filters in-place, filter handlers must return the new filter array. This is consistent with the old documention, but a different implementation: any changes to the `filters` argument will be ignored unless they are returned. This should make filter handlers easier to reason about.
 
 # 2.0 Series
+## 2.0.1
+* `sans-serif` was specified as a string, which is invalid, by Kyle Doherty ([#1260](https://github.com/dc-js/dc.js/pull/1260))
+
+## 2.0.0
+* xAxisPaddingUnit also applied to stacked charts, by Alexander Stillesjö ([#1234](https://github.com/dc-js/dc.js/pull/1234)
+* Limit zoom bounds - panning past the end should not cause brush to turn inside out. Thanks to Indri Muska for initial implementation and test ([#1026](https://github.com/dc-js/dc.js/pull/1026))
+* Legend was wrapping one item too late, by alexnb ([#1229](https://github.com/dc-js/dc.js/pull/1229))
+* Limit the number of legend items with `maxItems`, by Renoth ([#1114](https://github.com/dc-js/dc.js/pull/1114))
+* [Example of switching time intervals](http://dc-js.github.io/dc.js/examples/switching-time-intervals.html), for doing simple aggregation of simple time series data
+* Scatter plot titles, by Daniel Gall ([#1200](https://github.com/dc-js/dc.js/pull/1200))
+* `scatterPlot` and `RangedTwoDimensionalFilter` no longer require that the dimension key have exactly two elements, to support the common trick of putting the color in the third element.
+* [Scatter plot matrix brushing example](http://dc-js.github.io/dc.js/examples/splom.html)
+* `emptyOpacity` is exposed, and `emptySize` is a radius like the other sizes (squared for symbol size), by Ganesh Iyer ([#1058](https://github.com/dc-js/dc.js/pull/1058))
+* Bubble chart and heatmap correctly re-select (not selectAll) the sub-components in order to correctly apply new data when redrawn. This affects uses of dc.js where the data is replaced instead of being modified in place. (For example, the case where crossfilter is not used.) By Steffen Dienst and Matt Traynham. ([#1032](https://github.com/dc-js/dc.js/pull/1032), [#1237](https://github.com/dc-js/dc.js/pull/1237))
+* Further changed other unnecessary uses of `selectAll` to `select` - when appending or inserting a single element, one should almost always match that with `select` for updates. ([#1239](https://github.com/dc-js/dc.js/issues/1239))
+* Heatmap column/row filtering is a lot faster ([#649](https://github.com/dc-js/dc.js/issues/649))
+* `colorMixin.colorCalculator` properly documented and deprecated ([#1225](https://github.com/dc-js/dc.js/issues/1225))
+* Development dependencies upgraded, by Matt Traynham ([#1233](https://github.com/dc-js/dc.js/pull/1233))
+* Add a class diagram to the [HTML documentation](http://dc-js.github.io/dc.js/docs/html/).
+* Many documentation fixes. ([#612](https://github.com/dc-js/dc.js/issues/612), [#636](https://github.com/dc-js/dc.js/issues/636), [#1110](https://github.com/dc-js/dc.js/issues/1110), [#1224](https://github.com/dc-js/dc.js/issues/1224), [#1226](https://github.com/dc-js/dc.js/issues/1226), [#1228](https://github.com/dc-js/dc.js/issues/1228), [#1231](https://github.com/dc-js/dc.js/issues/1231), [#1235](https://github.com/dc-js/dc.js/issues/1235))
+
+## 2.0.0 beta 33
+* Use Sass 3 (SCSS) for generating CSS, by Matt Traynham ([#1049](https://github.com/dc-js/dc.js/pull/1049))
+* Don't try to interpolate user data in label paths, by Alexander Stillesjö ([#1151](https://github.com/dc-js/dc.js/pull/1151))
+* Allow specifying the unit for padding the X axis, by Alexander Stillesjö (thanks also to Matt Traynham for the alternate implementation in [#892](https://github.com/dc-js/dc.js/pull/892))
+* Force dots to be shown with `.xyTipsOn('always')`, by Anders Dalvander ([#1152](https://github.com/dc-js/dc.js/issues/1152))
+* Use keyAccessor for box plots; fix ordinal boxplot brushing and whisker widths, by Matt Traynham ([#1022](https://github.com/dc-js/dc.js/pull/1022))
+* `transitionDelay` allows staggered transitions, by Mauricio Bustos ([#1116](https://github.com/dc-js/dc.js/pull/1116))
+* Removed the confusing callback from dc.transition and documented the function
+
 ## 2.0.0 beta 32
-* elasticY and elasticX did not work if all values were negative (coordinate grid and row charts, respectively), by Sebastian Gröhn ([#879](https://github.com/dc-js/dc.js/issues/879) / [#1156](https://github.com/dc-js/dc.js/pull/1156))
+* `elasticY` and `elasticX` did not work if all values were negative (coordinate grid and row charts, respectively), by Sebastian Gröhn ([#879](https://github.com/dc-js/dc.js/issues/879) / [#1156](https://github.com/dc-js/dc.js/pull/1156))
 * Improved implementation of alignYAxes, by Mohamed Gazal and Gordon Woodhull ([#1033](https://github.com/dc-js/dc.js/pull/1033))
 * Examples of downloading the table data as it's formatted, and formatting legend items.
 * `legend.legendText` documentation was missing.
